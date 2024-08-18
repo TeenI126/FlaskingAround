@@ -23,9 +23,9 @@ def using_vars(name):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        return "hello"
+        return f'hello {request.form.get("name")} with cat {request.form.get("cat")}'
     else:
-        return "hi"
+        return HTTPMaker().add_par("ello").add_form(url_for("login"), {"name":"string", "cat": "simon"}).get_http()
 
 
 class HTTPMaker:
@@ -33,6 +33,7 @@ class HTTPMaker:
 
     def add_par(self, text: str):
         self.text += f"<p>{text}</p>\n"
+        return self
 
     def make_url(self, url: str, display: str) -> str:
         return f'<a href=\"{url}\">{display}</a>'
@@ -42,3 +43,17 @@ class HTTPMaker:
 
     def get_http(self) -> str:
         return self.text
+
+    def add_form(self, url:str,inputs:dict):
+        questions = ""
+        for quest, type in inputs.items():
+            questions += f'<label for"{quest}">{quest}</label>\n' \
+                         f'<input type="{type}" id="{quest}" name="{quest}">\n'
+        questions += f'<button type="submit">Submit</button>\n'
+
+        to_return = f'<form action="{url}" method="POST">\n' \
+                    f'{questions}\n' \
+                    f'</form>\n'
+        print(to_return)
+        self.text += to_return
+        return self
